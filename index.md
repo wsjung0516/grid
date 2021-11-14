@@ -6,8 +6,7 @@
 5. Each split window has multiple images, which is got from server by async communication.
 6. Each split window display only one image and others are cached
 7. When multi grid type is selected, while the previous split window start to cache after displaying the first image, next split window start to rendering process.
-
-![image1](images/split-window1.png)
+![](images/split-window1.png)
 
 For each split window has it's own element id like as ( element1, element2, element3, element4)
 
@@ -18,8 +17,7 @@ For each split window has it's own element id like as ( element1, element2, elem
 	 2. The next split window wait until the previous split window completing rendering.
 
 ---
-
-![image2](images/split-window2.png)
+![](images/split-window2.png)
 
 Using zip operator (rxjs) to wait the next process complete.
 
@@ -34,8 +32,7 @@ Using zip operator (rxjs) to wait the next process complete.
 5. After step3 and step4 is completing, it means one of split window processing is ready to start.
 
 ---
-![image3](images/split-window3.png)
-
+![](images/split-window3.png)
 1. Start with new html element id
 2. currentCtViewerElementId$: Observale that get the signal of start or end rendering.
 3. isStarted$
