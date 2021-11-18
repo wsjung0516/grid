@@ -30,8 +30,8 @@ Using zip operator (rxjs) to wait the next process complete.
 - case2: Multi split window. refer above diagram #2 ( waiting process for completing previous element)
 1. isStartedRendering: status of starting rendering. Should check if element id of previous split window is the same with id of isFinishedRendering$ value. 
 2. isFinishedRendering: status of complete rendering (drawing the firest image). 
-3. above circle #1(step 1). and circle #2 (step 2). job is completed.
-4. When user select grid type  (Grid type 2, Grid type 3, Grid type 4), create this observable for wating above circle #3(step 3). 
+3. above circle #1(step 1). and circle #2 (step 2). job is completed, then circle #3 is ready to activate (meaning it becomes active observable)
+4. When user select grid type  (Grid type 2, Grid type 3, Grid type 4), create this observable (circle #4) for waiting above circle #3(step 3). circle #4 (observable) is made when user select grid type, and made observable for each split window. 
 5. After circle #3(step3) and circle #4(step4) is completing, it means one of split window processing is ready to start.
 
 ---
