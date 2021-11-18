@@ -1,3 +1,5 @@
+# Split window 
+
 ### Condition
 1. User can select grid type randomly, one grid, two or three or four.
 2. Grid type1 is selected, then html element id is element1, which can be a canvas area for drawing.
@@ -5,7 +7,7 @@
 4. Grid type2 is selected, process of element2 have to wait until element1 is completing rendering process.
 5. Each split window has multiple images, which is got from server by async communication.
 6. Each split window display only one image and others are cached
-7. When multi grid type is selected, while the previous split window start to cache after displaying the first image, next split window start to rendering process.
+7. When multi grid type is selected, while the previous split window start to cache after displaying the first image of previous canvas, next split window start to rendering process.
 ![](images/split-window1.png)
 
 For each split window has it's own element id like as ( element1, element2, element3, element4)
@@ -18,21 +20,24 @@ For each split window has it's own element id like as ( element1, element2, elem
 
 ---
 ![](images/split-window2.png)
+diagram #2
 
 Using zip operator (rxjs) to wait the next process complete.
 
 - case1: One split window.
 1. Just after taking grid type, start rendering. 
 
-- case2: Multi split window.
+- case2: Multi split window. refer above diagram #2 ( waiting process for completing previous element)
 1. isStartedRendering: status of starting rendering. Should check if element id of previous split window is the same with id of isFinishedRendering$ value. 
-2. isFinishedRendering: status of complete rendering and related side job. 
-3. above step 1. and step 2. job is completed.
-4. When user select grid type, create this observable for wating above step 3. 
-5. After step3 and step4 is completing, it means one of split window processing is ready to start.
+2. isFinishedRendering: status of complete rendering (drawing the firest image). 
+3. above circle #1(step 1). and circle #2 (step 2). job is completed.
+4. When user select grid type  (Grid type 2, Grid type 3, Grid type 4), create this observable for wating above circle #3(step 3). 
+5. After circle #3(step3) and circle #4(step4) is completing, it means one of split window processing is ready to start.
 
 ---
 ![](images/split-window3.png)
+diagram #3.
+
 1. Start with new html element id
 2. currentCtViewerElementId$: Observale that get the signal of start or end rendering.
 3. isStarted$
@@ -42,6 +47,7 @@ Using zip operator (rxjs) to wait the next process complete.
 
 ---
 
+source program.
 ```ts
     renderingSplitWindows() {
         const isFinished$ = this.currentCtViewerElementId$.pipe(     // 1
