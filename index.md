@@ -49,63 +49,63 @@ diagram #3.
 
 source program.
 ```ts
-    renderingSplitWindows() {
-        const isFinished$ = this.currentCtViewerElementId$.pipe(     // 1
-            switchMap(val => {
-                this.selectedElementId = val.selectedElementId;     // 2
-                return this.ctService.isFinishedRendering$[this.selectedElementId]
-                    .pipe(take(1)); 				// 3
-            }),
-            takeUntil(this.unsubscribe$)
-        );
+    SplitWindowsProcess1() {
+		const isFinished$ = this.getCurrentSplitOperation$.pipe( // 1 To know the end of image processing
+				switchMap((val:any) => {
+					this.splitService.selectedElement = val.element; // 2
+					return this.splitService.isFinishedRendering$[val.element].pipe(take(1));
+				}),
+				take(1), // 3
+		);
+	
+		const isStarted$ = this.getCurrentSplitOperation$.pipe( // 4 To know the start of image processing
+				switchMap((val: any) => {
+					this.splitService.selectedElement = val.element;
+					return this.splitService.isStartedRendering$[val.element].pipe(take(1));
+				}),
+				take(1),
+		);
+	
+		if (this.splitMode > 1) {
+			if (this.splitService.selectedElement === 'element1') { // 5 first split window
+				this.tempObservable = defer(() => of(EMPTY).pipe());
+			} else if (this.splitService.selectedElement === 'element2') {
+				this.tempObservable = zip(isStarted$, isFinished$).pipe( //['element2','element1']
+						filter((val: any) => val[1] === 'element1') // 6 
+				);
+			} else if (this.splitService.selectedElement === 'element3') {
+				this.tempObservable = zip(isStarted$, isFinished$).pipe( //['element3','element2']
+						filter((val: any) => val[1] === 'element2'),
+				);
+			} else if (this.splitService.selectedElement === 'element4') {
+				this.tempObservable = zip(isStarted$, isFinished$).pipe( //['element4','element3']
+						filter((val: any) => val[1] === 'element3'),
+				);
+			}
+		} else {
+			this.tempObservable = defer(() => of(EMPTY).pipe()); // 7
+		}
 
-        const isStarted$ = this.currentCtViewerElementId$.pipe(      // 4
-            switchMap(val => {
-                this.selectedElementId = val.selectedElementId;
-                return this.ctService.isStartedRendering$[this.selectedElementId]
-                    .pipe(take(1));
-            }),
-            takeUntil(this.unsubscribe$)
-        );
-        // 
-        if ( gridNo > 1 ) {
-            if (this.selectedElementId === 'element1') {         // 5
-                this.tempObservable = defer(() => of(EMPTY).pipe());
-            } else if (this.selectedElementId === 'element2') {
-                this.tempObservable = zip(isStarted$, isFinished$).pipe(  //['element2','element1']
-                    filter(val => val[1] === 'element1'),        // 6
-                );
-            } else if (this.selectedElementId === 'element3') {
-                this.tempObservable = zip(isStarted$, isFinished$).pipe( //['element3','element2']
-                    filter(val => val[1] === 'element2'),
-                );
-            } else if (this.selectedElementId === 'element4') {
-                this.tempObservable = zip(isStarted$, isFinished$).pipe( //['element4','element3']
-                    filter(val => val[1] === 'element3'),
-                );
-            }
-        } else { // only one split window
-            this.tempObservable = defer(() => of(EMPTY).pipe());    // 7
-        }
     }
 
 ```
 
 ```ts
-    private initialize() {
-        const rendering$: Observable<any> = this.requestSplitWindow$[this.selectedElementId];
-                                                                    // 8
-        zip(this.tempObservable, rendering$).pipe(   // 9
-            take(1),
-            tap((val) => {
-                const data = {selectedElementId: val[1]};
-                /** Forward this to Webviewer-vertical.component.
-                 * Where this value is used to call function "getNodules" */
-                this.store.dispatch(new SetSelectedElementId(data));
-            })
-        ).subscribe((val) => {
-            this.renderingCtViewerSplitWindow(val[1]);              // 10
-        });
+    splitWindowProcess2() {
+		const rendering$: Observable<any> = this.requestRenderingSplitWindow$[this.splitService.selectedElement];
+		// 8
+		zip(this.tempObservable, rendering$).pipe( // 9
+				take(1),
+		).subscribe(([temp, element]) => {
+			/** Start processing ct-viewer after finished processing for previous split window*/
+			const idx = this.splitService.elements.findIndex(val => val === element)
+			this.splitService.selectedElement = element;
+			/** When change split mode, need to set the first signal to prepare processing
+			 * because each split window do process one by one */
+			this.store.dispatch(new SetCurrentSplitOperation({element: this.splitService.selectedElement}));
+	
+			this.makingSplitWindowBySelectedSeries(this.categoryIdx); // 10
+		});
   }
 ```
 showSelectedSeriesToViewer
