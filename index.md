@@ -20,7 +20,7 @@ For each split window has it's own element id like as ( element1, element2, elem
 
 ---
 ![](images/split-window2.png)
-diagram #2
+- diagram #2
 
 Using zip operator (rxjs) to wait the next process complete.
 
