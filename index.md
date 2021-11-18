@@ -108,8 +108,6 @@ source program.
 	});
   }
 ```
-showSelectedSeriesToViewer
-	this.store.dispatch(new SetSelectedCtViewer(data)) --> currentCtViewerElementId$
 - refer above snippet. below sequence no is the comment no of above snippet.	
 1. getCurrentSplitOperation$, when process arrive at the proper position (like step 2 of diagram #3) of checking then make observable when the this.splitService.isFinishedRendering$[val.element] is arrived. 
 2. then reserve element id, which can tell which split window is processing. 
