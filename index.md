@@ -92,20 +92,20 @@ source program.
 
 ```ts
     splitWindowProcess2() {
-		const rendering$: Observable<any> = this.requestRenderingSplitWindow$[this.splitService.selectedElement];
-		// 8
-		zip(this.tempObservable, rendering$).pipe( // 9
-				take(1),
-		).subscribe(([temp, element]) => {
-			/** Start processing ct-viewer after finished processing for previous split window*/
-			const idx = this.splitService.elements.findIndex(val => val === element)
-			this.splitService.selectedElement = element;
-			/** When change split mode, need to set the first signal to prepare processing
-			 * because each split window do process one by one */
-			this.store.dispatch(new SetCurrentSplitOperation({element: this.splitService.selectedElement}));
-	
-			this.makingSplitWindowBySelectedSeries(this.categoryIdx); // 10
-		});
+	const rendering$: Observable<any> = this.requestRenderingSplitWindow$[this.splitService.selectedElement];
+	// 8
+	zip(this.tempObservable, rendering$).pipe( // 9
+			take(1),
+	).subscribe(([temp, element]) => {
+		/** Start processing ct-viewer after finished processing for previous split window*/
+		const idx = this.splitService.elements.findIndex(val => val === element)
+		this.splitService.selectedElement = element;
+		/** When change split mode, need to set the first signal to prepare processing
+		 * because each split window do process one by one */
+		this.store.dispatch(new SetCurrentSplitOperation({element: this.splitService.selectedElement}));
+
+		this.makingSplitWindowBySelectedSeries(this.categoryIdx); // 10
+	});
   }
 ```
 showSelectedSeriesToViewer
